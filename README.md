@@ -1,71 +1,47 @@
-# 🔋 Akku Monitoring System – Robotino
-Ein System zur Überwachung und Analyse von Akkuzuständen für den Festo Robotino.  
-Ziel ist die präzise Erfassung von Strom, Spannung und Zustandsdaten mehrerer Akkus zur Optimierung von Laufzeit, Sicherheit und Systemverhalten.
+# Akku Monitoring System – Robotino
 
+Dieses Projekt entwickelt ein Akku-Monitoring-System für den Festo Robotino.  
+Ziel ist es, Strom, Temperatur, Spannung, Restladung und geschätzte Restlaufzeit der Akkus zu erfassen und über ROS2 bereitzustellen.
 
-## 🚀 Projektübersicht
-Dieses Projekt entwickelt ein **Akkumonitoring-System für Robotino**, das folgende Funktionen ermöglicht:
-- Messung von Strom und Spannung
-- Überwachung mehrerer Akkus gleichzeitig
-- Berechnung des Ladezustands (State of Charge)
-- Erkennung von Ein-/Aussteckzuständen
-- Temperaturüberwachung
-- Integration in ROS / Robotino-Systeme
+Das System kombiniert Messwerte eines Arduino-basierten Sensorsystems mit der internen Spannungsmessung des Robotino. Daraus wird ein gemeinsamer Akku-Zustand berechnet, der von anderen ROS2-Nodes weiterverwendet werden kann.
 
-Das System dient insbesondere für Anwendungen in:
-- 🤖 Robotik (z. B. RoboCup / Smart Manufacturing)
-- 🔋 Energiemanagement
-- ⚙️ industrielle Automatisierung
+---
 
+## Ziel des Projekts
 
-## 🧠 Funktionsprinzip
-Das Monitoring basiert auf einer Kombination aus:
-- Strommessung (z. B. ACS758 Sensor)
-- Spannungsmessung
-- Coulomb Counting
-- Zusatzsignalen pro Akku:
-  - Temperatur
-  - Maschinen-ID
-  - Plug-In / Plug-Out Status
+Der Robotino soll zusätzliche Informationen über seinen Energiezustand erhalten:
 
-Die Daten werden kontinuierlich erfasst und verarbeitet.
+- aktueller Stromverbrauch
+- durchschnittlicher Stromverbrauch
+- Temperatur der Akkus
+- gemessene Robotino-Spannung
+- geschätzte Restladung in Ah
+- geschätzte Restladung in %
+- geschätzte Restlaufzeit
+- Warnmeldungen bei kritischen Zuständen
 
+Das Projekt dient als Grundlage für ein robusteres Energiemanagement bei mobilen Robotiksystemen.
 
-## ⚙️ Systemarchitektur
-### Komponenten:
-- 🔋 Akkus (z. B. 18V Systeme, parallel geschaltet)
-- 📟 Stromsensor (ACS758-200B)
-- 🔌 Analogsignale (Temp, ID, Status)
-- 💻 Rechner (z. B. Intel NUC / PC)
-- 🤖 Robotino Plattform
-- 🧠 ROS (Datenverarbeitung)
+---
 
-## 📊 Features
-### ✅ Aktuell umgesetzt
-- Grundlegende Messung von Strom und Spannung
-- Integration von Sensorsignalen
-- Datenaufnahme über analoge Eingänge
-- erste Auswertung der Akkudaten
+## Systemübersicht
 
-### 🔄 In Entwicklung
-- präzise SOC-Berechnung (Coulomb Counting)
-- Kalman-Filter zur Glättung der Messwerte
-- bessere Fehlererkennung (Spannung über... = Fehler Messung wird nicht mit eingebaut)
-- Visualisierung der Daten
-- automatische Akku-Erkennung
-- Vorhersage der Restlaufzeit mit Parameter durchschnittlicher Verbrauch
-
-## 🛠️ Technologien
-- **Hardware:**
-  - Festo Robotino
-  - ACS758 Stromsensor
-  - Mikrocontroller (z. B. Arduino / ESP / direkte PC-Anbindung)
-
-- **Software:**
-  - ROS / ROS2
-  - Python / C++
-  - Node-basierte Kommunikation
-
-Robotino stellt bereits Sensordaten über ROS-Topics bereit (z. B. Motor- und Power-Daten), diese sind jedoch teilweise unzuverlässig oder unvollständig :contentReference[oaicite:0]{index=0}.
-
-## 📂 Projektstruktur
+```text
+Arduino
+│
+├── Strommessung über ACS758
+├── Temperaturmessung über Akkusensoren
+├── Berechnung von Durchschnittsstrom
+└── Ausgabe als Serial-Daten
+        ↓
+ROS2 Arduino Reader Node
+        ↓
+/battery/arduino_state
+        ↓
+Robotino Voltage Reader Node
+        ↓
+/battery/robotino_voltage_state
+        ↓
+Battery State Estimator
+        ↓
+/battery/state
